@@ -1,20 +1,24 @@
 FROM alpine:3.18.2
 
-RUN apk add lighttpd php7-common php7-session php7-iconv php7-json php7-gd php7-curl php7-xml php7-mysqli php7-imap php7-cgi fcgi php7-pdo php7-pdo_mysql php7-soap php7-xmlrpc php7-posix php7-mcrypt php7-gettext php7-ldap php7-ctype php7-dom php7-simplexml wget
+RUN apk update && apk upgrade --no-cache && \
+    apk add --no-cache curl mariadb-client redis php7 php7-phar php7-json php7-curl php7-fpm php7-mysqli php7-iconv
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp && \
     wp core download --path=/var/www/wordpress --allow-root
 
-COPY conf/wp-config.php /var/www/wordpress/wp-config.php
-COPY tools/create_wordpress.sh /tmp/create_wordpress.sh
+RUN find / -name www.conf
 
-WORKDIR /var/www/wordpress
+RUN mkdir /run/php
 
-RUN chmod +x /tmp/create_wordpress.sh
-ENTRYPOINT [ "/tmp/create_wordpress.sh" ]
+COPY ./tools/script.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/script.sh
+ENTRYPOINT [ "/usr/local/bin/script.sh" ]
+
+WORKDIR /var/www/html
 
 EXPOSE 9000
 
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm7", "-F"]
