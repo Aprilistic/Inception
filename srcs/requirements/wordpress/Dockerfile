@@ -1,30 +1,20 @@
 FROM alpine:3.18.2
-WORKDIR /wordpress
-RUN apk update && apk upgrade --no-cache
 
-RUN apk add php7 \
-    php7-fpm \
-    php7-mysqli \
-    php7-json \
-    php7-openssl \
-    php7-curl \
-    php7-zlib \
-    php7-xml \
-    php7-phar \
-    php7-intl \
-    php7-dom \
-    php7-xmlreader \
-    php7-ctype \
-    php7-mbstring \
-    php7-gd \
-    curl \
-    --no-cache
+RUN apk add lighttpd php7-common php7-session php7-iconv php7-json php7-gd php7-curl php7-xml php7-mysqli php7-imap php7-cgi fcgi php7-pdo php7-pdo_mysql php7-soap php7-xmlrpc php7-posix php7-mcrypt php7-gettext php7-ldap php7-ctype php7-dom php7-simplexml wget
 
-RUN curl -O https://wordpress.org/latest.tar.gz \
-    && tar -xzf latest.tar.gz \
-    && rm latest.tar.gz \
-    && mv wordpress /var/www/localhost/htdocs/wordpress
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp && \
+    wp core download --path=/var/www/wordpress --allow-root
 
-COPY php-fpm.conf /etc/php7/php-fpm.d/www.conf
+COPY conf/wp-config.php /var/www/wordpress/wp-config.php
+COPY tools/create_wordpress.sh /tmp/create_wordpress.sh
 
-CMD ["php-fpm7", "-F"]
+WORKDIR /var/www/wordpress
+
+RUN chmod +x /tmp/create_wordpress.sh
+ENTRYPOINT [ "/tmp/create_wordpress.sh" ]
+
+EXPOSE 9000
+
+CMD ["php-fpm", "-F"]
