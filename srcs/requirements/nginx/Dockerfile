@@ -1,8 +1,10 @@
 FROM alpine:3.18.2
 
 WORKDIR /nginx
-RUN apk update && apk upgrade --no-cache
-RUN apk add nginx openssl --no-cache
+RUN apk update && apk upgrade --no-cache \
+    apk add nginx openssl wget --no-cache\
+    wget -O /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_x86_64 && \
+    chmod +x /usr/bin/dumb-init
 
 # generate ssl certificate
 RUN mkdir /etc/nginx/ssl
@@ -16,4 +18,5 @@ RUN mkdir -p /run/nginx
 
 EXPOSE 443
 
+ENTRYPOINT [ "/usr/bin/dumb-init", "--" ]
 CMD ["nginx", "-g", "daemon off;"]
