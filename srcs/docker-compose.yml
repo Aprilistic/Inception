@@ -14,7 +14,7 @@ services:
     container_name: wordpress
     build: ./requirements/wordpress
     volumes:
-      - ./wordpress_data:/var/www/html
+      - wordpress_data:/var/www/html
     restart: always
     networks:
       - network
@@ -32,6 +32,7 @@ services:
     env_file:
       - .env
 
+
 volumes:
   wordpress_data:
     driver: local
@@ -39,12 +40,14 @@ volumes:
       type: none
       device: /home/jinheo/data/wordpress
       o: bind
+
   mariadb_data:
     driver: local
     driver_opts:
       type: none
       device: /home/jinheo/data/mysql
       o: bind
+
 
 networks:
   network:
