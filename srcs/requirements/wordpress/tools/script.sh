@@ -9,9 +9,9 @@ else
 		rm -rf latest.tar.gz
 		mv wordpress/* .
 		rm -rf wordpress
-
-		rm -rf /etc/php82/php-fpm.d/www.conf
-		mv ./www.conf /etc/php82/php-fpm.d/www.conf
+		
+		# rm -rf /etc/php82/php-fpm.d/www.conf
+		# mv ./www.conf /etc/php82/php-fpm.d/www.conf
 
 		sed -i "s/username_here/$MYSQL_USER/g" wp-config-sample.php
 		sed -i "s/password_here/$MYSQL_PASSWORD/g" wp-config-sample.php
