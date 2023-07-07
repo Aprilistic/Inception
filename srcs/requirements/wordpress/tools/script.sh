@@ -1,32 +1,17 @@
 #!/bin/sh
 
-# wait for MariaDB
-until nc -z -v -w30 mariadb 3306
-do
-  echo "Waiting for database connection..."
-  # wait for 5 seconds before check again
-  sleep 5
-done
+sleep 5
+/usr/local/bin/wait-for-it.sh $MARIADB_HOST:$MARIADB_PORT --timeout=15
 
-# wp-config.php 
-if [ -f ./wp-config.php ]; then
-		echo "WordPress already installed"
-else
-		wget https://wordpress.org/latest.tar.gz
-		tar -xvf latest.tar.gz
-		rm -rf latest.tar.gz
-		mv wordpress/* .
-		rm -rf wordpress
-
-		sed -i "s/database_name_here/$MARIADB_DB/g" wp-config-sample.php
-		sed -i "s/username_here/$MARIADB_USER/g" wp-config-sample.php
-		sed -i "s/password_here/$MARIADB_PWD/g" wp-config-sample.php
-		sed -i "s/localhost/$MARIADB_HOST/g" wp-config-sample.php
-		cp wp-config-sample.php wp-config.php
-
-		echo "WordPress installed"
+# check if WordPress is installed
+if [ ! -f /var/www/html/wp-config.php ]; then
+  # install WordPress
+  wp core download --allow-root --path=/var/www/html --force
+  wp config create --allow-root --path=/var/www/html --dbhost=$MARIADB_HOST:$MARIADB_PORT --dbname=$MARIADB_DB --dbuser=$MARIADB_USER --dbpass=$MARIADB_PWD --force
+  wp db create --allow-root --path=/var/www/html
+  wp core install --allow-root --path=/var/www/html --url=$WP_URL --title=$WP_TITLE --admin_user=$WP_ADMIN_USER --admin_password=$WP_ADMIN_PWD --admin_email=$WP_ADMIN_EMAIL --skip-email
+  wp user create --path=/var/www/html $WP_USER $WP_USER_EMAIL --user_pass=$WP_USER_PWD --role=author
 fi
 
-# apk -L info php82-fpm
-
+# start php-fpm
 /usr/sbin/php-fpm82 --nodaemonize
