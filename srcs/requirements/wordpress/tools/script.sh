@@ -11,7 +11,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
   wp db create --allow-root --path=/var/www/html
   wp core install --allow-root --path=/var/www/html --url=$WP_URL --title=$WP_TITLE --admin_user=$WP_ADMIN_USER --admin_password=$WP_ADMIN_PWD --admin_email=$WP_ADMIN_EMAIL --skip-email
   wp user create --path=/var/www/html $WP_USER $WP_USER_EMAIL --user_pass=$WP_USER_PWD --role=author
-  wp theme install --path=/var/www/html twentytwenty --activate
+  wp theme activate --path=/var/www/html twentytwentytwo
 fi
 
 # start php-fpm
