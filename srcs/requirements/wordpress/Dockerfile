@@ -10,7 +10,7 @@ RUN curl -s -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-
     curl https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > /usr/local/bin/wait-for-it.sh && \
     chmod +x /usr/local/bin/wait-for-it.sh
 
-RUN addgroup -g 82 -S www-data; exit 0  # This command will not fail if the group already exists
+RUN addgroup -g 82 -S www-data;     exit 0  # This command will not fail if the group already exists
 RUN adduser -u 82 -D -S -G www-data www-data
 
 COPY ./conf/www.conf /etc/php82/php-fpm.d/www.conf
