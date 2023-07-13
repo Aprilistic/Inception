@@ -8,6 +8,7 @@ RUN apk update && \
 # generate ssl certificate
 RUN mkdir /etc/nginx/ssl
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
+    -subj "/C=KR/ST=Seoul/L=Seoul/O=42Seoul/OU=jinheo/CN=jinheo" \
     -keyout /etc/nginx/ssl/jinheo.key -out /etc/nginx/ssl/jinheo.crt
 
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
